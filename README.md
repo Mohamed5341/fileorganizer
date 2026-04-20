@@ -5,7 +5,7 @@ Organise files by extensions.
 ---
 
 # Features
-- [ ] Basic organizer function by extension.
+- [x] Basic organizer function by extension.
 - [ ] Organize by a pattern.
 - [ ] Check duplicated files.
 - [ ] Configure using JSON file.
