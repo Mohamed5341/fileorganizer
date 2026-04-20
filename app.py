@@ -24,6 +24,9 @@ for folder_name, folders_list, files_list in os.walk(working_dir):
 
         Path.mkdir(selected_dir, exist_ok=True)
 
-        shutil.move(f, selected_dir)
+        try:
+            shutil.move(f, selected_dir)
+        except Exception as e:
+            print(f"Error occurred while moving {f}: {e}")
 
 print("Done")
