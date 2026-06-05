@@ -14,19 +14,44 @@ targets["mp4"] = target_dir / "videos"
 targets["csv"] = target_dir / "sheets"
 targets["xlsx"] = target_dir / "sheets"
 
+sub_target = {}
+sub_target["invoice*"] = "invoice"
+sub_target["backup*"] = "backup"
+
 extensions = []
+# move files
 for folder_name, folders_list, files_list in os.walk(working_dir):
     current_folder = Path(folder_name)
 
-    for file_name in files_list:
-        f = current_folder / file_name
-        selected_dir = targets.get(f.suffix[1:], target_dir/"others")
+    for pattern in sub_target.keys():
+        for file_name in current_folder.glob(pattern):
+            if not file_name.is_file():
+                continue
+            selected_dir = targets.get(file_name.suffix[1:], target_dir/"others") / sub_target[pattern]
 
-        Path.mkdir(selected_dir, exist_ok=True)
+            Path.mkdir(selected_dir, exist_ok=True, parents=True)
+
+            try:
+                shutil.move(file_name, selected_dir)
+            except Exception as e:
+                print(f"Error occurred while moving {file_name}: {e}")
+
+    for file_name in current_folder.glob("*"):
+        if not file_name.is_file():
+            continue
+        selected_dir = targets.get(file_name.suffix[1:], target_dir/"others")
+
+        Path.mkdir(selected_dir, exist_ok=True, parents=True)
 
         try:
-            shutil.move(f, selected_dir)
+            shutil.move(file_name, selected_dir)
         except Exception as e:
-            print(f"Error occurred while moving {f}: {e}")
+            print(f"Error occurred while moving {file_name}: {e}")
 
+
+# remove empty folders
+for folder_name, folders_list, files_list in os.walk(working_dir):
+    current_folder = Path(folder_name)
+    if not any(current_folder.iterdir()):
+        Path.rmdir(folder_name)
 print("Done")
